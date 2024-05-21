@@ -1,5 +1,4 @@
 import { signIn } from "@/auth"
-import { Button } from "flowbite-react"
 
 interface SignInButtonProps {
   signInProvider: string,
@@ -12,19 +11,25 @@ export default function SignInButton( props : SignInButtonProps) {
     <form
       action={async () => {
         "use server"
-        await signIn(props.signInProvider)
+        await signIn(props.signInProvider, { redirectTo: "/dashboard"})
       }}
       >
         <button
           type="submit"
-          className="flex flex-row justify-center content-center gap-x-2 border-2 rounded-full p-2 border-grey-light"
+          className="flex flex-row justify-center content-center 
+          gap-x-2 border-2 rounded-full py-2 px-4 border-grey bg-grey-light 
+          transition-colors duration-300 ease-in-out hover:bg-grey"
         >
           <div
             className="flex self-center"
           >
             { props.icon }
           </div>
-          Sign in with {props.signInText}
+          <div
+            className="text-md"
+          >
+            Sign in with {props.signInText}
+          </div>
         </button>
     </form>
   )

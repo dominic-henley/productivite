@@ -19,7 +19,9 @@ export default function Home() {
             >
               Productivité
           </div>
-          <div>
+          <div
+            className="flex justify-center content-center"
+          >
             { buttons.map((button, idx) => (
               <SignInButton
                 key={idx}
