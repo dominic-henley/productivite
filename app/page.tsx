@@ -1,7 +1,8 @@
+import { auth } from "@/auth";
 import SignInButton from "@/components/SignInButton";
 import { FaGoogle } from "react-icons/fa";
 
-export default function Home() {
+export default async function Home() {
 
   const buttons = [
     { provider: "google", text: "Google", icon: <FaGoogle />}

@@ -1,4 +1,7 @@
-import { signIn } from "@/auth"
+"use client"
+
+import { signIn } from "next-auth/react"
+import { Button } from "flowbite-react"
 
 interface SignInButtonProps {
   signInProvider: string,
@@ -8,29 +11,17 @@ interface SignInButtonProps {
 
 export default function SignInButton( props : SignInButtonProps) {
   return (
-    <form
-      action={async () => {
-        "use server"
-        await signIn(props.signInProvider, { redirectTo: "/dashboard"})
-      }}
+    <Button
+      pill
+      className="bg-grey enabled:hover:bg-grey-dark"
+      onClick={() => signIn(props.signInProvider, { callbackUrl: "/dashboard" })}
+    >
+      <div
+        className="flex items-center gap-x-2"
       >
-        <button
-          type="submit"
-          className="flex flex-row justify-center content-center 
-          gap-x-2 border-2 rounded-full py-2 px-4 border-grey bg-grey-light 
-          transition-colors duration-300 ease-in-out hover:bg-grey"
-        >
-          <div
-            className="flex self-center"
-          >
-            { props.icon }
-          </div>
-          <div
-            className="text-md"
-          >
-            Sign in with {props.signInText}
-          </div>
-        </button>
-    </form>
+        { props.icon }
+        Sign in with {props.signInText}
+      </div>
+    </Button>
   )
 }
