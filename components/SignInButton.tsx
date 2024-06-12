@@ -1,7 +1,7 @@
 "use client"
 
 import { signIn } from "next-auth/react"
-import { Button } from "flowbite-react"
+import { Button } from "@/components/ui/button"
 
 interface SignInButtonProps {
   signInProvider: string,
@@ -12,7 +12,6 @@ interface SignInButtonProps {
 export default function SignInButton( props : SignInButtonProps) {
   return (
     <Button
-      pill
       className="bg-grey enabled:hover:bg-grey-dark"
       onClick={() => signIn(props.signInProvider, { callbackUrl: "/dashboard" })}
     >

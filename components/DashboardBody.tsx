@@ -1,5 +1,4 @@
-import { Card } from "flowbite-react";
-
+import { Card } from "@/components/ui/card"
 
 export default function DashboardBody() {
   return (

@@ -1,6 +1,7 @@
 "use client"
 
-import { Card, Modal } from "flowbite-react";
+import { Card } from "@/components/ui/card"
+import { Dialog } from "./ui/dialog";
 import { useState } from "react";
 
 export default function FinanceTracker() {
@@ -13,16 +14,8 @@ export default function FinanceTracker() {
         className="grow hover:cursor-pointer"
         onClick={() => setOpenModal(true)}
       >
-        <Modal
-          show={openModal}
-          onClose={() => setOpenModal(false)}
-        >
-          <Modal.Header>Finances</Modal.Header>
-          <Modal.Body>
-            hello finances
-          </Modal.Body>
-        </Modal>
       </Card>
+      {/* dialog here */}
     </>
   )
 }

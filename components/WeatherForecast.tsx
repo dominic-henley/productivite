@@ -1,18 +1,25 @@
+// @ts-nocheck TODO: figure out how to fix type errors
 "use client"
 
-import { Card } from "flowbite-react";
+import { Card } from "@/components/ui/card"
 import { useEffect, useState } from "react";
-import { zip } from "@/utils/arrays";
+import { Skeleton } from "./ui/skeleton";
+import Image from "next/image";
 
 interface Coords {
   latitude: number,
   longitude: number
 }
 
+interface RequestData {
+  location: object,
+  current: object
+}
+
 export default function WeatherForecast() {
 
   const [coords, setCoords] = useState<Coords>();
-  const [weatherData, setWeatherData] = useState([{}]);
+  const [weatherData, setWeatherData] = useState<RequestData | null>(null);
 
   useEffect(() => {
     if(navigator.geolocation) {
@@ -24,33 +31,55 @@ export default function WeatherForecast() {
   }, [])
 
   useEffect(() => {
-    let weatherApiUrl = "https://api.open-meteo.com/v1/forecast?"; 
-
-    // Set lat and lng params in the weather API URL
-    weatherApiUrl += `latitude=${coords?.latitude.toString()}&`;
-    weatherApiUrl += `longitude=${coords?.longitude.toString()}&`;
-    weatherApiUrl += `hourly=temperature_2m`;
-    // console.log(weatherApiUrl)
-
     if(coords) {
-      // Because of useEffect things, we need to check if coords is not null
-      fetch(weatherApiUrl).then(async (res) => {
-        let response = await res.json()
-        response = response.hourly
-        const data = zip(response.temperature_2m, response.time)
-        setWeatherData(data);
-      })
+      const url = new URL("/dashboard/api/weather", window.location.href)
+      url.searchParams.set("latitude", coords.latitude.toString())
+      url.searchParams.set("longitude", coords.longitude.toString())
+      
+      fetch(url).then((res) => {
+        res.json().then((data) => {
+          setWeatherData(data)
+        })
+      });
     }
-    
   }, [coords])
-
-  // console.log(weatherData);
 
   return (
     <Card
-      className="aspect-square"
+      className="aspect-square flex justify-center items-center"
     >
-      
+      { !weatherData && (
+        <div
+          className="aspect-square h-4/5 flex-col justify-center items-center"
+        >
+          <Skeleton className="h-1/5 w-4/5 my-4 mx-2 rounded-full" />
+          <Skeleton className="aspect-square h-2/5 my-4 mx-2 rounded-xl" />
+        </div>
+      )}
+
+      { weatherData && (
+        <div
+          className="aspect-square h-4/5 flex-col justify-center items-center"
+        >
+          <div
+            className="w-full text-sm flex justify-center items-center"
+          >
+            { weatherData.current.condition.text }
+            <img
+                src={`https:${weatherData.current.condition.icon}`}
+                className="grayscale aspect-auto"
+                alt="icon"
+                width={48}
+              />
+          </div>
+          <div
+            className="relative w-full flex justify-center"
+          >
+            { weatherData.current.feelslike_c}&#176;C
+            {/* TODO: add farenheit option */}
+          </div>
+        </div>
+      )}
     </Card>
   )
 }

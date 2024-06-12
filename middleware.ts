@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
 
 export default auth(async (req) => {
-
+  console.log(req);
   const session = await auth();
   
   if(!session && req.nextUrl.pathname == "/dashboard") {
@@ -12,6 +12,7 @@ export default auth(async (req) => {
       If for whatever reason the user is able to access /dashboard without a valid session
       boot them back into the landing page
     */
+    console.log("user not logged in, redirecting to login page")
     return NextResponse.redirect(new URL("/", req.url));
   }
 
@@ -20,6 +21,7 @@ export default auth(async (req) => {
       Alternatively, if the user is already logged in and they are in the landing page
       redirect them to the dashboard
     */
+    console.log("user is logged in, redirecting to dashboard")
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 })

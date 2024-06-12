@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "flowbite-react"
+import { Card } from "@/components/ui/card"
 import { useEffect, useState } from "react"
 import moment from "moment"
 
@@ -20,10 +20,10 @@ export default function Clock() {
 
   return (
     <Card
-      className="aspect-square"
+      className="aspect-square flex justify-center items-center"
     >
       <p
-        className="font-semibold flex justify-center"
+        className="font-semibold flex justify-center text-3xl"
       >
         { time }
       </p>
