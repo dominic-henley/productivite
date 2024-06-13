@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/auth";
 
 export default auth(async (req) => {
-  console.log(req);
   const session = await auth();
   
   if(!session && req.nextUrl.pathname == "/dashboard") {
