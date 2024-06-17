@@ -4,14 +4,14 @@ import { Card } from "@/components/ui/card"
 import { Dialog } from "./ui/dialog";
 import { useState } from "react";
 
-export default function FinanceTracker() {
+export default function TaskTracker() {
 
   const [openModal, setOpenModal] = useState(false);
 
   return (
     <>
       <Card
-        className="grow hover:cursor-pointer"
+        className="w-1/2 hover:cursor-pointer"
         onClick={() => setOpenModal(true)}
       >
       </Card>

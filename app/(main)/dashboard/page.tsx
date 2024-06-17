@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
 import Clock from "@/components/Clock";
 import DashboardBody from "@/components/DashboardBody";
-import FinanceTracker from "@/components/FinanceTracker";
 import SpotifyWrapper from "@/components/SpotifyWrapper";
 import WeatherForecast from "@/components/WeatherForecast";
+import TaskTracker from "@/components/TaskTracker";
 
 export default async function Dashboard() {
 
@@ -19,8 +19,12 @@ export default async function Dashboard() {
         >
           {/* { TODO: might mess around with top row size in the future} */}
           <Clock />
-          <SpotifyWrapper />
-          <FinanceTracker />
+          <div
+            className="flex grow gap-x-5"
+          >
+            <SpotifyWrapper />
+            <TaskTracker />
+          </div>
           <WeatherForecast />
         </div>
         <div

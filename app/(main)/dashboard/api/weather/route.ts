@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
   await fetch(weatherApiUrl).then(async (res) => {
     weatherData = await res.json();
   })
-  console.log(weatherData);
+
   return NextResponse.json(weatherData);
 }

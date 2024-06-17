@@ -5,91 +5,67 @@ import { Button } from "./ui/button"
 import { useRouter } from "next/navigation"
 import { generateRandomString, sha256, base64encode } from "@/lib/spotify"
 import { useEffect, useState } from "react"
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies"
+import { Skeleton } from "./ui/skeleton"
+import WebPlayer from "./WebPlayer"
 
-interface spotifyPlayerPropTypes {
-  cookies: RequestCookie | undefined,
+interface spotifyPlayerPropType {
+  token: string | undefined
 }
 
-export default function SpotifyPlayer( { cookies } : spotifyPlayerPropTypes) {
+export default function SpotifyPlayer({ token } : spotifyPlayerPropType) {
   const router = useRouter()
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [codeChallenge, setCodeChallenge] = useState<string | null>(null);
-  
-  const scope = 'user-read-private user-read-email'
+  const [tokenChecked, setTokenChecked] = useState<boolean>(false);
+
+  const scope = 'user-read-private user-read-email user-read-playback-state'
   const authUrl = new URL("https://accounts.spotify.com/authorize")
-  
-  console.log(cookies);
+  const state = generateRandomString(16);
+
   useEffect(() => {
-    if(cookies) {
-      console.log("HI LOGGED IN")
+    // Check if access token exists
+    if(token) {
+      setLoggedIn(true);
+    } else {  
       setLoggedIn(false);
-    } else {
-      console.log("NOT LOGGED IN")
-      setLoggedIn(true);
     }
+    setTokenChecked(true);
   }, [])
-
-  useEffect(() => {
-    const codeVerifier = generateRandomString(64);
-    window.localStorage.setItem('code_verifier', codeVerifier);
-    sha256(codeVerifier).then((res) => {
-      setCodeChallenge(base64encode(res));
-    })
-  }, [])
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    let code = urlParams.get('code')
-    if(code || localStorage.getItem('code_verifier')) {
-      // If a code is found in the URL or in local storage, then the user has authorised spotify
-      setLoggedIn(true);
-    }
-  })
-
+  
   const params : Record<string, string> = {
     response_type: 'code',
     client_id: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID!,
     scope,
-    code_challenge_method: 'S256',
-    code_challenge: codeChallenge!,
-    redirect_uri: process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI ?? 'http://localhost:3000/dashboard/api/spotify'
+    redirect_uri: process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI ?? 'http://localhost:3000/dashboard/api/spotify',
+    state
   }
 
   authUrl.search = new URLSearchParams(params).toString();
 
   return (
     <Card
-      className="grow"
+      className="w-1/2"
     >
-
-      <div
-        className="flex p-6 h-full justify-center items-center"
-      >
+      { !tokenChecked && (
         <div
-          className="aspect-square"
+          className="flex justify-center items-center w-full h-full"
         >
-          image
+          <Skeleton className="w-1/2 h-1/2"/>
         </div>
+      )}
+      { !loggedIn && tokenChecked && (
         <div
-          className="flex flex-col h-full w-full justify-between"
+          className="flex justify-center items-center h-full"
         >
-          <div
-            className="flex justify-center"
+          <Button
+            onClick={() => router.push(authUrl.toString())}
           >
-            title
-          </div>
-          <div
-            className="flex justify-center"
-          >
-              <Button
-                onClick={() => router.push(authUrl.toString())}
-              >
-                Login to spotify
-              </Button>
-          </div>
-        </div>
+            Login to spotify
+          </Button>
       </div>
+      )}
+      { loggedIn && tokenChecked && (
+        <WebPlayer token={ token }/>
+      )}
     </Card>
   )
 }
