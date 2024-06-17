@@ -1,7 +1,11 @@
+"use client"
+
 import { PauseIcon } from "@radix-ui/react-icons";
 
-export default function Play() {
+export default function Play({ clickHandler } : { clickHandler : MouseEvent}) {
   return (
-    <PauseIcon />
+    <PauseIcon 
+      className="hover:cursor-pointer"
+    />
   )
 }

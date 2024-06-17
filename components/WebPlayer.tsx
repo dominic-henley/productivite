@@ -31,15 +31,33 @@ export default function WebPlayer({ token } : { token: string | undefined}) {
         },
       }).then(async (res) => {
         const response = await res.json();
-        console.log(response);
         setTrack(response.items[0].track);
       })
     }
   }, [])
   
   useEffect(() => {
-    // Check if the player is currently playing anything
-    
+    /*
+      Check if the player session is active, this is to sync the player with the session
+    */
+    const url = new URL("/v1/me/player", "https://api.spotify.com");
+    fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).then(async (res) => {
+      // We can't call res.json() here because res might be a 204, which will not send a json body response
+      const response = await res; 
+      if(response.status == 200) {
+        // So we call it here instead
+        const playerState = await res.json();
+        setPlaying(playerState.is_playing);
+      }
+
+      if(response.status == 204) {
+        // The API doesn't actually allow the website to play songs,
+      }
+    })
   })
 
   console.log(track)
