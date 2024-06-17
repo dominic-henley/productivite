@@ -2,8 +2,9 @@
 
 import { TrackPreviousIcon, PlayIcon, PauseIcon, TrackNextIcon } from "@radix-ui/react-icons"
 import { useEffect, useState } from "react"
-import Play from "./Play";
+import Play from "./spotify/Play";
 import Pause from "./Pause"
+import { Skeleton } from "./ui/skeleton";
 
 export default function WebPlayer({ token } : { token: string | undefined}) {
 
@@ -11,53 +12,76 @@ export default function WebPlayer({ token } : { token: string | undefined}) {
   const [isPlaying, setPlaying] = useState<boolean>(false);
 
   useEffect(() => {
-    fetch("https://api.spotify.com/v1/me/player/currently-playing", {
-      method: "GET",
-      headers: {
-        'Authorization': `Bearer ${token}`
+    // Fetch most recently played track to display on the UI. This may not be playing
+    if(token) {
+      const url = new URL("/v1/me/player/recently-played", "https://api.spotify.com");
+    
+      const params : Record<string, string> = {
+        limit: "1",
       }
-    }).then(async (res) => {
-      setTrack(await res.json());
-    })
+
+      for(const [k, v] of Object.entries(params)) {
+        url.searchParams.set(k, v);
+      }
+
+      fetch(url, {
+        method: "GET",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+      }).then(async (res) => {
+        const response = await res.json();
+        console.log(response);
+        setTrack(response.items[0].track);
+      })
+    }
   }, [])
   
   useEffect(() => {
-    if(track) {
-      setPlaying(track.is_playing);
-    }
+    // Check if the player is currently playing anything
+    
   })
 
   console.log(track)
 
   return (
-  <div
-    className="flex p-6 h-full justify-center items-center"
-  >
-    <div
-      className="aspect-square"
-    >
-      { track && (
-        <img
-          src={track.item.album.images[2].url}
-        />
-      )}
-    </div>
-    <div
-      className="flex flex-col h-full w-full justify-between"
-    >
+    <>
+    { !track && (
       <div
-        className="flex justify-center"
+        className="flex justify-center items-center w-full h-full"
       >
-        { track && track.item.name }
+        <Skeleton className="w-1/2 h-1/2"/>
       </div>
+    )}
+    { track && (
       <div
-        className="flex justify-center gap-x-10"
+        className="flex p-6 h-full justify-center items-center"
       >
-        <TrackPreviousIcon />
-        { isPlaying ? <Pause /> : <Play /> }
-        <TrackNextIcon />
+        <div
+          className="aspect-square"
+        >
+          <img
+            src={track.album.images[2].url}
+          />
+        </div>
+        <div
+          className="flex flex-col h-full w-full justify-between"
+        >
+          <div
+            className="flex justify-center"
+          >
+            { track.name }
+          </div>
+          <div
+            className="flex justify-center gap-x-10"
+          >
+            <TrackPreviousIcon />
+            { isPlaying ? <Pause /> : <Play /> }
+            <TrackNextIcon />
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    )}
+    </>
   )
 }
