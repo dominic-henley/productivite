@@ -24,7 +24,6 @@ export default auth(async (req) => {
 })
 
 export async function middleware(req: NextRequest) {
-  console.log(req);
   // TODO: implement spotify refresh token
 }
 

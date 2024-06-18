@@ -9,7 +9,6 @@ interface SignOutButtonProps {
 
 }
 
-// TODO: might redesign this
 export default function SignOutButton( props: SignOutButtonProps) {
   return (
     <TooltipProvider>
