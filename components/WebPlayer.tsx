@@ -1,66 +1,85 @@
+// @ts-nocheck
 "use client"
 
-import { TrackPreviousIcon, PlayIcon, PauseIcon, TrackNextIcon } from "@radix-ui/react-icons"
+import { TrackPreviousIcon, PlayIcon, PauseIcon, TrackNextIcon, LoopIcon } from "@radix-ui/react-icons"
 import { useEffect, useState } from "react"
-import Play from "./spotify/Play";
-import Pause from "./Pause"
 import { Skeleton } from "./ui/skeleton";
 
 export default function WebPlayer({ token } : { token: string | undefined}) {
 
+  if(true) {
+    return (
+      <>
+        hi
+      </>
+    )
+  }
+
   const [track, setTrack] = useState(undefined);
-  const [isPlaying, setPlaying] = useState<boolean>(false);
+  const [paused, setPaused] = useState<boolean>(false);
+  const [is_active, setActive] = useState(false);
+  const [playerInstance, setPlayerInstance] = useState(undefined);
 
-  useEffect(() => {
-    // Fetch most recently played track to display on the UI. This may not be playing
-    if(token) {
-      const url = new URL("/v1/me/player/recently-played", "https://api.spotify.com");
-    
-      const params : Record<string, string> = {
-        limit: "1",
-      }
-
-      for(const [k, v] of Object.entries(params)) {
-        url.searchParams.set(k, v);
-      }
-
-      fetch(url, {
-        method: "GET",
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-      }).then(async (res) => {
-        const response = await res.json();
-        setTrack(response.items[0].track);
-      })
-    }
-  }, [])
-  
   useEffect(() => {
     /*
-      Check if the player session is active, this is to sync the player with the session
+      Initialise web playback SDK
     */
-    const url = new URL("/v1/me/player", "https://api.spotify.com");
-    fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }).then(async (res) => {
-      // We can't call res.json() here because res might be a 204, which will not send a json body response
-      const response = await res; 
-      if(response.status == 200) {
-        // So we call it here instead
-        const playerState = await res.json();
-        setPlaying(playerState.is_playing);
-      }
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
 
-      if(response.status == 204) {
-        // The API doesn't actually allow the website to play songs,
-      }
-    })
-  })
+    document.body.appendChild(script);
 
-  console.log(track)
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      const player = new window.Spotify.Player({
+          name: 'Productivité',
+          getOAuthToken: cb => { cb(token); },
+          volume: 0.20
+      });
+
+      setPlayerInstance(player);
+
+      player.addListener('ready', async ({ device_id }) => {
+        // Transfer playback to Productivite
+        const url = new URL("/v1/me/player", "https://api.spotify.com");
+        const ids = [device_id];
+ 
+        await fetch(url, {
+          method: "PUT",
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': "application/json"
+          },
+          body: `{"device_ids": ["${device_id}"]}`
+          /* 
+            ^^ 79 - ???
+            https://community.spotify.com/t5/Spotify-for-Developers/Cannot-Transfer-Playback-Descriptor-ID/td-p/5351203
+          */
+        })
+      });
+
+      player.addListener('not_ready', ({ device_id }) => {
+        // ...
+      });
+
+      player.addListener('player_state_changed', ( state => {
+        console.log(state);
+        if (!state) {
+            return;
+        }
+    
+        setTrack(state.track_window.current_track);
+        setPaused(state.paused);
+    
+      }));
+
+      player.connect();
+
+      return () => {
+        setPaused(false);
+      }
+    };
+  }, [])
 
   return (
     <>
@@ -76,13 +95,6 @@ export default function WebPlayer({ token } : { token: string | undefined}) {
         className="flex p-6 h-full justify-center items-center"
       >
         <div
-          className="aspect-square"
-        >
-          <img
-            src={track.album.images[2].url}
-          />
-        </div>
-        <div
           className="flex flex-col h-full w-full justify-between"
         >
           <div
@@ -91,11 +103,28 @@ export default function WebPlayer({ token } : { token: string | undefined}) {
             { track.name }
           </div>
           <div
-            className="flex justify-center gap-x-10"
+            className="flex justify-between"
           >
-            <TrackPreviousIcon />
-            { isPlaying ? <Pause /> : <Play /> }
-            <TrackNextIcon />
+            <LoopIcon />
+            <div
+              className="flex justify-center gap-x-10"
+            >
+              <TrackPreviousIcon 
+                className="hover:cursor-pointer"
+                onClick={() => playerInstance.previousTrack()} 
+              />
+
+              <button onClick={() => playerInstance.togglePlay() }> 
+                { paused ? <PlayIcon /> : <PauseIcon /> }
+              </button>
+
+              <TrackNextIcon 
+                className="hover:cursor-pointer"
+                onClick={() => playerInstance.nextTrack()} 
+              />
+
+            </div>
+            <LoopIcon />
           </div>
         </div>
       </div>

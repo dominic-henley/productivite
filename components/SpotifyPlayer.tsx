@@ -17,7 +17,7 @@ export default function SpotifyPlayer({ token } : spotifyPlayerPropType) {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [tokenChecked, setTokenChecked] = useState<boolean>(false);
 
-  const scope = 'user-read-private user-read-email user-read-playback-state user-read-recently-played'
+  const scope = 'user-read-private user-read-email user-read-playback-state user-read-recently-played streaming user-modify-playback-state'
   const authUrl = new URL("https://accounts.spotify.com/authorize")
   const state = generateRandomString(16);
 

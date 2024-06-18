@@ -23,11 +23,15 @@ export default auth(async (req) => {
   }
 })
 
-  
+export async function middleware(req: NextRequest) {
+  console.log(req);
+  // TODO: implement spotify refresh token
+}
+
 export const config = {
   /* 
     Negative lookahead regex to prevent middleware from running on these routes
     Primarily, these routes are routes not associated with normal authentication procedures
   */ 
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api/spotify|_next/static|_next/image|favicon.ico).*)"],
 }
