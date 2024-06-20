@@ -3,8 +3,9 @@ import type { NextRequest } from "next/server";
 
 import { auth } from "@/auth";
 
-export default auth(async (req) => {
+export default auth(async function middleware(req : NextRequest) {
   const session = await auth();
+  console.log(session);
   
   if(!session && req.nextUrl.pathname == "/dashboard") {
     /* 
@@ -23,14 +24,10 @@ export default auth(async (req) => {
   }
 })
 
-export async function middleware(req: NextRequest) {
-  // TODO: implement spotify refresh token
-}
-
 export const config = {
   /* 
     Negative lookahead regex to prevent middleware from running on these routes
     Primarily, these routes are routes not associated with normal authentication procedures
   */ 
-  matcher: ["/((?!api/spotify|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 }

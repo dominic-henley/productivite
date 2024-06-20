@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import SpotifyPlayer from './SpotifyPlayer';
+import SpotifyPlayer from './SpotifyPlayer'
 
 export default async function SpotifyWrapper() {
 
