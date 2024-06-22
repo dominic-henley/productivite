@@ -1,17 +1,8 @@
-"use client"
-
 import { Card } from "@/components/ui/card";
 import { DataTable } from "./dataTable/DataTable";
 import { columns, Task } from "./dataTable/Columns";
-import { useEffect, useState } from "react";
 
 export default function DashboardBody() {
-
-  const [selectedRows, setSelectedRows] = useState<Task[]>([])
-
-  useEffect(() => {
-    console.log(selectedRows);
-  }, [])
 
   const testTask : Task[] = [
     {
@@ -148,7 +139,6 @@ export default function DashboardBody() {
       <DataTable 
         columns={ columns }
         data={ testTask }
-        // callbackFn={ setSelectedRows }
       />
     </Card>
   )

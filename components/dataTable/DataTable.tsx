@@ -22,17 +22,14 @@ import { useState } from "react"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[],
-  callbackFn: Function
 }
- 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  callbackFn
 }: DataTableProps<TData, TValue>) {
-
+  
   const [rowSelection, setRowSelection] = useState({})
-
+   
   const table = useReactTable({
     data,
     columns,
@@ -46,7 +43,7 @@ export function DataTable<TData, TValue>({
  
   return (
     <div className="flex flex-col justify-between">
-      <div className="rounded-md border">
+      <div className="rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -72,9 +69,11 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                >
+                  >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell 
+                      key={cell.id}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -93,11 +92,11 @@ export function DataTable<TData, TValue>({
       <div
         className="flex items-center justify-between space-x-2 py-4 mx-4"
       >
-        {/* <Button
-          onClick={ callbackFn(table.getFilteredSelectedRowModel()) }
+        <Button
+          disabled={ table.getFilteredSelectedRowModel().rows.length == 0 }
         >
           Actions
-        </Button> */}
+        </Button>
         <div
           className="flex flex-row gap-x-2"
         >

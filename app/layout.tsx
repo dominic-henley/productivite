@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Inter as FontSans } from "next/font/google"
+import { cn } from "@/lib/utils";
 
-const inter = Inter({ subsets: ["latin"] });
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans"
+})
 
 export const metadata: Metadata = {
   title: "Productivité",
@@ -16,7 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`bg-white dark:bg-black ${inter.className}`}>
+      <body 
+        className={`
+          bg-white 
+          dark:bg-black 
+          ${cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
