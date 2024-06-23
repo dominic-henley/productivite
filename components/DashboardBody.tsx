@@ -131,11 +131,6 @@ export default function DashboardBody() {
     <Card
      className="h-full flex flex-col"
     >
-      <div
-        className="grow m-5"
-      >
-        Tasks for the day
-      </div>
       <DataTable 
         columns={ columns }
         data={ testTask }

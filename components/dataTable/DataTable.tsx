@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/table"
 import { Button } from "../ui/button"
 import { useState } from "react"
+import { PlusIcon } from "@radix-ui/react-icons"
+import NewTaskButton from "./NewTaskButton"
  
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -43,6 +45,11 @@ export function DataTable<TData, TValue>({
  
   return (
     <div className="flex flex-col justify-between">
+      <div
+        className="flex justify-end px-4 pt-4"
+      >
+        <NewTaskButton />
+      </div>
       <div className="rounded-md">
         <Table>
           <TableHeader>

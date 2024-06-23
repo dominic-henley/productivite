@@ -49,6 +49,10 @@ export const columns: ColumnDef<Task>[] = [
     header: "Name"
   },
   {
+    accessorKey: "priority",
+    header: "Priority"
+  },
+  {
     id: "actions",
     cell: ({ row }) => {
       const payment = row.original
