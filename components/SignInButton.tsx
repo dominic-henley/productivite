@@ -13,7 +13,7 @@ export default function SignInButton( props : SignInButtonProps) {
   return (
     <Button
       className="bg-grey enabled:hover:bg-grey-dark"
-      onClick={() => signIn(props.signInProvider, { callbackUrl: "/dashboard" })}
+      onClick={() => signIn(props.signInProvider, { callbackUrl: "/dashboard/api/login" })}
     >
       <div
         className="flex items-center gap-x-2"

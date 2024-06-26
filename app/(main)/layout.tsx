@@ -1,8 +1,7 @@
 import Navbar from "@/components/Navbar";
 import SidebarMenu from "@/components/SidebarMenu";
-import SignOutButton from "@/components/SignOutButton";
 import type { Metadata } from "next";
-import Link from "next/link";
+
 
 export const metadata: Metadata = {
   title: "Productivité | Dashboard",
